@@ -1,4 +1,4 @@
-package user
+package movie
 
 type ResponseFormat struct {
 	Code    int         `json:"code"`

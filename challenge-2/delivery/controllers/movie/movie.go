@@ -1,13 +1,13 @@
-package product
+package movie
 
 import (
 	"be/api/aws/s3"
-	logic "be/delivery/logic/product"
-	"be/delivery/middlewares"
+	logic "be/delivery/logic/movie"
 	"be/delivery/templates"
-	"be/repository/product"
+	"be/repository/movie"
 	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -15,12 +15,12 @@ import (
 )
 
 type Controller struct {
-	r  product.Product
+	r  movie.Movie
 	s3 s3.TaskS3M
-	l  logic.Product
+	l  logic.Movie
 }
 
-func New(r product.Product, s3 s3.TaskS3M, l logic.Product) *Controller {
+func New(r movie.Movie, s3 s3.TaskS3M, l logic.Movie) *Controller {
 	return &Controller{
 		r:  r,
 		s3: s3,
@@ -31,21 +31,20 @@ func New(r product.Product, s3 s3.TaskS3M, l logic.Product) *Controller {
 func (cont *Controller) Create() echo.HandlerFunc {
 	return func(c echo.Context) error {
 
-		var user_uid = middlewares.ExtractTokenUid(c)
 		var req logic.Req
 
 		if err := c.Bind(&req); err != nil {
 			switch {
-			case strings.Contains(err.Error(), "name"):
-				err = errors.New("invalid name format")
-			case strings.Contains(err.Error(), "price"):
-				err = errors.New("invalid price format")
-			case strings.Contains(err.Error(), "stock"):
-				err = errors.New("invalid stock format")
+			case strings.Contains(err.Error(), "tittle"):
+				err = errors.New("invalid tittle format")
 			case strings.Contains(err.Error(), "description"):
 				err = errors.New("invalid description format")
-			case strings.Contains(err.Error(), "strconv.ParseInt"):
-				err = errors.New("invalid input stock")
+			case strings.Contains(err.Error(), "duration"):
+				err = errors.New("invalid duration format")
+			case strings.Contains(err.Error(), "artist"):
+				err = errors.New("invalid artist format")
+			case strings.Contains(err.Error(), "genres"):
+				err = errors.New("invalid genres format")
 			default:
 				err = errors.New("invalid input")
 			}
@@ -77,7 +76,7 @@ func (cont *Controller) Create() echo.HandlerFunc {
 
 		// create product
 
-		_, err = cont.r.Create(user_uid, *req.ToProduct())
+		_, err = cont.r.Create(*req.ToMovie())
 
 		if err != nil {
 			log.Warn(err)
@@ -88,29 +87,28 @@ func (cont *Controller) Create() echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, templates.InternalServerError(nil, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusCreated, templates.Success(http.StatusCreated, "success add product", nil))
+		return c.JSON(http.StatusCreated, templates.Success(http.StatusCreated, "success add movie", nil))
 	}
 }
 
 func (cont *Controller) Update() echo.HandlerFunc {
 	return func(c echo.Context) error {
 
-		var user_uid = middlewares.ExtractTokenUid(c)
-		var product_uid = c.QueryParam("product_uid")
+		var movie_uid = c.QueryParam("movie_uid")
 		var req logic.Req
 
 		if err := c.Bind(&req); err != nil {
 			switch {
-			case strings.Contains(err.Error(), "name"):
-				err = errors.New("invalid name format")
-			case strings.Contains(err.Error(), "price"):
-				err = errors.New("invalid price format")
-			case strings.Contains(err.Error(), "stock"):
-				err = errors.New("invalid stock format")
+			case strings.Contains(err.Error(), "tittle"):
+				err = errors.New("invalid tittle format")
 			case strings.Contains(err.Error(), "description"):
 				err = errors.New("invalid description format")
-			case strings.Contains(err.Error(), "strconv.ParseInt"):
-				err = errors.New("invalid input stock")
+			case strings.Contains(err.Error(), "duration"):
+				err = errors.New("invalid duration format")
+			case strings.Contains(err.Error(), "artist"):
+				err = errors.New("invalid artist format")
+			case strings.Contains(err.Error(), "genres"):
+				err = errors.New("invalid genres format")
 			default:
 				err = errors.New("invalid input")
 			}
@@ -124,7 +122,7 @@ func (cont *Controller) Update() echo.HandlerFunc {
 			log.Warn(err)
 		}
 		if err == nil {
-			res1, err := cont.r.Get(user_uid, product_uid)
+			res1, err := cont.r.Get("", "", "", "", movie_uid, 1, 1)
 			if err != nil {
 				log.Warn(err)
 				return c.JSON(http.StatusInternalServerError, templates.InternalServerError(nil, errors.New("there's some problem is server"), nil))
@@ -153,7 +151,7 @@ func (cont *Controller) Update() echo.HandlerFunc {
 
 		// create product
 
-		_, err = cont.r.Update(product_uid, *req.ToProduct())
+		_, err = cont.r.Update(movie_uid, *req.ToMovie())
 
 		if err != nil {
 			log.Warn(err)
@@ -164,19 +162,18 @@ func (cont *Controller) Update() echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, templates.InternalServerError(nil, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusAccepted, templates.Success(http.StatusAccepted, "success Update product", nil))
+		return c.JSON(http.StatusAccepted, templates.Success(http.StatusAccepted, "success Update movie", nil))
 	}
 }
 
 func (cont *Controller) Delete() echo.HandlerFunc {
 	return func(c echo.Context) error {
 
-		var user_uid = middlewares.ExtractTokenUid(c)
-		var product_uid = c.QueryParam("product_uid")
+		var movie_uid = c.QueryParam("movie_uid")
 
 		// aws s3
 
-		res1, err := cont.r.Get(user_uid, product_uid)
+		res1, err := cont.r.Get("", "", "", "", movie_uid, 1, 1)
 		if err != nil {
 			log.Error(err)
 		}
@@ -195,7 +192,7 @@ func (cont *Controller) Delete() echo.HandlerFunc {
 
 		// create product
 
-		_, err = cont.r.Delete(product_uid)
+		_, err = cont.r.Delete(movie_uid)
 
 		if err != nil {
 			log.Warn(err)
@@ -206,24 +203,30 @@ func (cont *Controller) Delete() echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, templates.InternalServerError(nil, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusAccepted, templates.Success(http.StatusAccepted, "success delete product", nil))
+		return c.JSON(http.StatusAccepted, templates.Success(http.StatusAccepted, "success delete movie", nil))
 	}
 }
 
 func (cont *Controller) Get() echo.HandlerFunc {
 	return func(c echo.Context) error {
 
-		var user_uid = middlewares.ExtractTokenUid(c)
-		var product_uid = c.QueryParam("product_uid")
-		var all = c.QueryParam("all")
-
-		if all != "" {
-			user_uid = ""
+		var title = c.QueryParam("title")
+		var description = c.QueryParam("description")
+		var artist = c.QueryParam("artist")
+		var genres = c.QueryParam("genres")
+		var movie_uid = c.QueryParam("movie_id")
+		limit, err := strconv.Atoi(c.QueryParam("limit"))
+		if err != nil {
+			log.Warn(err)
+			return c.JSON(http.StatusBadRequest, templates.BadRequest(nil, "invalid limit format", nil))
 		}
-		// get product
-		// log.Info(user_uid)
-		// log.Info(product_uid)
-		res, err := cont.r.Get(user_uid, product_uid)
+		page, err := strconv.Atoi(c.QueryParam("page"))
+		if err != nil {
+			log.Warn(err)
+			return c.JSON(http.StatusBadRequest, templates.BadRequest(nil, "invalid page format", nil))
+		}
+
+		res, err := cont.r.Get(title, description, artist, genres, movie_uid, limit, page)
 
 		if err != nil {
 			log.Warn(err)
@@ -234,6 +237,6 @@ func (cont *Controller) Get() echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, templates.InternalServerError(nil, err.Error(), nil))
 		}
 
-		return c.JSON(http.StatusOK, templates.Success(http.StatusOK, "success get product", res))
+		return c.JSON(http.StatusOK, templates.Success(http.StatusOK, "success get movie", res))
 	}
 }
