@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
-	"github.com/labstack/gommon/log"
 	"github.com/lithammer/shortuuid"
 	"gorm.io/gorm"
 )
@@ -103,7 +102,7 @@ func (r *Repo) Get(title, description, artist, genres, movie_uid string, limit, 
 	case genres == "":
 		genres = "genres != '" + shortuuid.New() + "'"
 	}
-	log.Info(movie_uid)
+	// log.Info(movie_uid)
 	switch {
 	case movie_uid != "":
 		movie_uid = "movie_uid = '" + movie_uid + "'"
