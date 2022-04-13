@@ -4,15 +4,10 @@ import (
 	"be/api/aws"
 	"be/api/aws/s3"
 	"be/configs"
-	"be/delivery/controllers/auth"
-	"be/delivery/controllers/product"
-	"be/delivery/controllers/user"
-	productLogic "be/delivery/logic/product"
-	userLogic "be/delivery/logic/user"
+	"be/delivery/controllers/movie"
+	movieLogic "be/delivery/logic/movie"
 	"be/delivery/routes"
-	authRepo "be/repository/auth"
-	productRepo "be/repository/product"
-	userRepo "be/repository/user"
+	movieRepo "be/repository/movie"
 	"be/utils"
 	"fmt"
 	"log"
@@ -28,18 +23,11 @@ func main() {
 
 	var awsS3 = s3.New(awsS3Conf)
 
-	var authRepo = authRepo.New(db)
-	var authCont = auth.New(authRepo)
-
-	var userRepo = userRepo.New(db)
-	var userLogic = userLogic.New()
-	var userCont = user.New(userRepo, awsS3, userLogic)
-
-	var productRepo = productRepo.New(db)
-	var productLogic = productLogic.New()
-	var productCont = product.New(productRepo, awsS3, productLogic)
+	var movieRepo = movieRepo.New(db)
+	var movieLogic = movieLogic.New()
+	var movieCont = movie.New(movieRepo, awsS3, movieLogic)
 	var e = echo.New()
 
-	routes.Routes(e, authCont, userCont, productCont)
+	routes.Routes(e, movieCont)
 	log.Fatal(e.Start(fmt.Sprintf(":%d", config.PORT)))
 }

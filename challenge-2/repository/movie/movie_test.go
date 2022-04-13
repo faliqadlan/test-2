@@ -102,7 +102,7 @@ func TestGet(t *testing.T) {
 
 		}
 
-		res1, err := r.Create(entities.Movie{Title: shortuuid.New() + "judul" + "genap" + "11", Description: shortuuid.New() + "description" + "genap" + "11", Artist: shortuuid.New() + "artist" + "genap" + "11", Genres: shortuuid.New() + "genres" + "genap" + "11"})
+		res1, err := r.Create(entities.Movie{Title: shortuuid.New() + "anonim" + "genap" + "11", Description: shortuuid.New() + "description" + "genap" + "11", Artist: shortuuid.New() + "artist" + "genap" + "11", Genres: shortuuid.New() + "genres" + "genap" + "11"})
 
 		if err != nil {
 			t.Log(err)
@@ -135,6 +135,11 @@ func TestGet(t *testing.T) {
 		assert.Contains(t, res.Responses[0].Genres, "genap")
 
 		res, err = r.Get("", "", "", "", res1.Movie_uid, 0, 2)
+
+		assert.Nil(t, err)
+		assert.Equal(t, 1, len(res.Responses))
+
+		res, err = r.Get("anonim", "", "", "", res1.Movie_uid, 0, 1)
 
 		assert.Nil(t, err)
 		assert.Equal(t, 1, len(res.Responses))

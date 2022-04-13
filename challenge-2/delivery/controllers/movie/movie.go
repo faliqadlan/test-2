@@ -35,8 +35,8 @@ func (cont *Controller) Create() echo.HandlerFunc {
 
 		if err := c.Bind(&req); err != nil {
 			switch {
-			case strings.Contains(err.Error(), "tittle"):
-				err = errors.New("invalid tittle format")
+			case strings.Contains(err.Error(), "title"):
+				err = errors.New("invalid title format")
 			case strings.Contains(err.Error(), "description"):
 				err = errors.New("invalid description format")
 			case strings.Contains(err.Error(), "duration"):
@@ -99,8 +99,8 @@ func (cont *Controller) Update() echo.HandlerFunc {
 
 		if err := c.Bind(&req); err != nil {
 			switch {
-			case strings.Contains(err.Error(), "tittle"):
-				err = errors.New("invalid tittle format")
+			case strings.Contains(err.Error(), "title"):
+				err = errors.New("invalid title format")
 			case strings.Contains(err.Error(), "description"):
 				err = errors.New("invalid description format")
 			case strings.Contains(err.Error(), "duration"):
@@ -215,17 +215,26 @@ func (cont *Controller) Get() echo.HandlerFunc {
 		var artist = c.QueryParam("artist")
 		var genres = c.QueryParam("genres")
 		var movie_uid = c.QueryParam("movie_id")
-		limit, err := strconv.Atoi(c.QueryParam("limit"))
-		if err != nil {
+		var limitString = c.QueryParam("limit")
+		limit, err := strconv.Atoi(limitString)
+		if err != nil && limitString != "" {
 			log.Warn(err)
 			return c.JSON(http.StatusBadRequest, templates.BadRequest(nil, "invalid limit format", nil))
 		}
-		page, err := strconv.Atoi(c.QueryParam("page"))
-		if err != nil {
+		var pageString = c.QueryParam("page")
+		page, err := strconv.Atoi(pageString)
+		if err != nil && pageString != "" {
 			log.Warn(err)
 			return c.JSON(http.StatusBadRequest, templates.BadRequest(nil, "invalid page format", nil))
 		}
 
+		if limitString == "" {
+			limit = 0
+		}
+		if pageString == "" {
+			page = 1
+		}
+		// log.Info(title)
 		res, err := cont.r.Get(title, description, artist, genres, movie_uid, limit, page)
 
 		if err != nil {

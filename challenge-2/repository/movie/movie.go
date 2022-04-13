@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
+	"github.com/lithammer/shortuuid"
 	"gorm.io/gorm"
 )
 
@@ -78,42 +79,42 @@ func (r *Repo) Get(title, description, artist, genres, movie_id string, limit, p
 	case title != "":
 		title = "title LIKE '%" + title + "%'"
 	case title == "":
-		title = "title != '" + "title" + "'"
+		title = "title != '" + shortuuid.New() + "'"
 	}
 
 	switch {
 	case description != "":
 		description = "description LIKE '%" + description + "%'"
 	case description == "":
-		description = "description != '" + "description" + "'"
+		description = "description != '" + shortuuid.New() + "'"
 	}
 
 	switch {
 	case artist != "":
 		artist = "artist LIKE '%" + artist + "%'"
 	case artist == "":
-		artist = "artist != '" + "artist" + "'"
+		artist = "artist != '" + shortuuid.New() + "'"
 	}
 
 	switch {
 	case genres != "":
 		genres = "genres LIKE '%" + genres + "%'"
 	case genres == "":
-		genres = "genres != '" + "genres" + "'"
+		genres = "genres != '" + shortuuid.New() + "'"
 	}
 
 	switch {
 	case movie_id != "":
 		movie_id = "movie_uid = '" + movie_id + "'"
 	case movie_id == "":
-		movie_id = "movie_uid != '" + "movie_uid" + "'"
+		movie_id = "movie_uid != '" + shortuuid.New() + "'"
 	}
-
+	// log.Info(title)
 	var condition = title + " AND " + description + " AND " + artist + " AND " + genres + " AND " + movie_id
 
 	var response = GetResponses{}
 
-	var res = r.db.Model(&entities.Movie{}).Where(condition).Limit(limit).Offset((page - 1) * limit).Scan(&response.Responses)
+	var res = r.db.Model(&entities.Movie{}).Where(condition).Select("movie_uid as Movie_uid, title as Title, description as Description, duration as Duration, artist as Artist, genres as Genres, image as Image").Limit(limit).Offset((page - 1) * limit).Scan(&response.Responses)
 
 	if res.Error != nil {
 		return GetResponses{}, res.Error
