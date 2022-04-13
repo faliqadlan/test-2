@@ -214,7 +214,7 @@ func (cont *Controller) Get() echo.HandlerFunc {
 		var description = c.QueryParam("description")
 		var artist = c.QueryParam("artist")
 		var genres = c.QueryParam("genres")
-		var movie_uid = c.QueryParam("movie_id")
+		var movie_uid = c.QueryParam("movie_uid")
 		var limitString = c.QueryParam("limit")
 		limit, err := strconv.Atoi(limitString)
 		if err != nil && limitString != "" {

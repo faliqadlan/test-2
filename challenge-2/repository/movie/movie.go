@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
+	"github.com/labstack/gommon/log"
 	"github.com/lithammer/shortuuid"
 	"gorm.io/gorm"
 )
@@ -73,7 +74,7 @@ func (r *Repo) Update(movie_uid string, req entities.Movie) (entities.Movie, err
 	return req, nil
 }
 
-func (r *Repo) Get(title, description, artist, genres, movie_id string, limit, page int) (GetResponses, error) {
+func (r *Repo) Get(title, description, artist, genres, movie_uid string, limit, page int) (GetResponses, error) {
 
 	switch {
 	case title != "":
@@ -102,15 +103,15 @@ func (r *Repo) Get(title, description, artist, genres, movie_id string, limit, p
 	case genres == "":
 		genres = "genres != '" + shortuuid.New() + "'"
 	}
-
+	log.Info(movie_uid)
 	switch {
-	case movie_id != "":
-		movie_id = "movie_uid = '" + movie_id + "'"
-	case movie_id == "":
-		movie_id = "movie_uid != '" + shortuuid.New() + "'"
+	case movie_uid != "":
+		movie_uid = "movie_uid = '" + movie_uid + "'"
+	case movie_uid == "":
+		movie_uid = "movie_uid != '" + shortuuid.New() + "'"
 	}
 	// log.Info(title)
-	var condition = title + " AND " + description + " AND " + artist + " AND " + genres + " AND " + movie_id
+	var condition = title + " AND " + description + " AND " + artist + " AND " + genres + " AND " + movie_uid
 
 	var response = GetResponses{}
 
