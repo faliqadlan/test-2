@@ -14,7 +14,7 @@
 <summary>HLA</summary>
 <img src="challenge-2/images/hla.png">
 </details>
-<details>
+
 <details>
 <summary>Movie</summary>
 
