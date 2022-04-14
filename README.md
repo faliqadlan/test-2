@@ -36,19 +36,25 @@
 git clone https://github.com/faliqadlan/test-2.git
 ```
 
-### 2.1 create file .env
+### 2. move to the directory
+
+```bash
+cd challenge-2
+```
+
+### 3.1 create file .env
 
 ```bash
 touch .env
 ```
 
-### 2.2 open .env
+### 3.2 open .env
 
 ```
 nano .env
 ```
 
-### 2.3 write .env
+### 3.3 write .env
 
 ```bash
 PORT=8080
@@ -62,6 +68,12 @@ DB_LOC=Local
 S3_REGION=<reqion AWS S3>/ap-southeast-1
 S3_ID=<KEY ID AWS S3>
 S3_SECRET=<SECRETKEY AWS S3>
+```
+
+### 4. Run
+
+```
+go run main.go
 ```
 
 # Contact
