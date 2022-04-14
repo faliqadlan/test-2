@@ -11,56 +11,50 @@
 [POSTMANT](https://app.getpostman.com/join-team?invite_code=6f3882e5cbe848756e6092ae1da4c01f&target_code=caacbce1308cdc5235798d61c97e631a)
 
 <details>
-<summary>ERD</summary>
-<img src="images/erd.png">
-</details>
-<details>
 <summary>HLA</summary>
-<img src="images/hla.png">
+<img src="challenge-2/images/hla.png">
 </details>
+
 <details>
-<summary>User</summary>
+<summary>Movie</summary>
 
-| Feature Doctor | Endpoint | Query Param | Request Body         | JWT Token | Utility                               |
-| -------------- | -------- | ----------- | -------------------- | --------- | ------------------------------------- |
-| POST           | /login   | -           | indentity & password | NO        | login user with indentity & passwords |
-| POST           | /doctor  | -           | \_                   | NO        | register user                         |
-
-</details>
-<details>
-<summary>Product</summary>
-
-| Feature Patient | Endpoint | Query Param      | Request Body | JWT Token | Utility                |
-| --------------- | -------- | ---------------- | ------------ | --------- | ---------------------- |
-| POST            | /product | -                | \_           | YES       | add product            |
-| DELETE          | /product | -                | -            | YES       | delete current product |
-| PUT             | /product | -                | -            | YES       | update current product |
-| GET             | /product | product_uid, all | -            | YES       | get current product    |
+| Feature Patient | Endpoint | Query Param                                                 | Request Body | JWT Token | Utility              |
+| --------------- | -------- | ----------------------------------------------------------- | ------------ | --------- | -------------------- |
+| POST            | /movie   | -                                                           | \_           | NO        | add movie            |
+| DELETE          | /movie   | -                                                           | -            | NO        | delete current movie |
+| PUT             | /movie   | -                                                           | -            | NO        | update current movie |
+| GET             | /movie   | tittle, description, artist, genres, movie_uid, limit, page | -            | NO        | get current product  |
 
 </details>
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 # How to Use
 
-### 1. install
+### 1. Download
 
 ```bash
-git clone https://github.com/faliqadlan/sagara_test.git
+git clone https://github.com/faliqadlan/test-2.git
 ```
 
-### 2.1 create file .env
+### 2. move to the directory
+
+```bash
+cd challenge-2
+```
+
+### 3.1 create file .env
 
 ```bash
 touch .env
 ```
 
-### 2.2 open .env
+### 3.2 open .env
 
 ```
 nano .env
 ```
 
-### 2.3 write .env
+### 3.3 write .env
 
 ```bash
 PORT=8080
@@ -76,11 +70,16 @@ S3_ID=<KEY ID AWS S3>
 S3_SECRET=<SECRETKEY AWS S3>
 ```
 
+### 4. Run
+
+```
+go run main.go
+```
+
 # Contact
 
 [![Gmail](https://img.shields.io/badge/gmail-faliq67%40gmail.com-red?logo=Gmail)](https://mail.google.com/)
 [![Github](https://img.shields.io/badge/github-faliqadlan-lightgrey?logo=Github)](https://github.com/faliqadlan)
 [![LinkedIn](https://img.shields.io/badge/linkedIn-faliqadlan-blue?logo=LinkedIn)](https://www.linkedin.com/in/faliqa/)
-
 
 <p align="right">(<a href="#top">back to top</a>)</p>
